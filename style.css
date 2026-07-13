@@ -27,7 +27,7 @@ body {
     -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border-color);
     padding: 1.2rem 0;
-    z-index: 9999;
+    z-home: 9999;
 }
 
 .navbar-brand {
