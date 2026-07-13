@@ -1,0 +1,12 @@
+version: 0.0
+os: linux
+
+files:
+  - source: /
+    destination: /var/www/vonnetics
+
+hooks:
+  AfterInstall:
+    - location: scripts/restart_nginx.sh
+      timeout: 300
+      runas: root
