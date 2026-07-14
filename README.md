@@ -23,8 +23,7 @@ Nginx needs appropriate read permissions to serve the files, and the deployer us
 ```bash
 sudo chown -R ubuntu:www-data /var/www/html
 sudo chmod -R 755 /var/www/html
-2. Nginx Routing ConfigurationTo handle custom page routing (e.g., serving home.html as the default root page and handling extensionless URLs like /about), the virtual host configuration (/etc/nginx/sites-available/my-website) must be configured as follows:Nginxserver
-{
+2. Nginx Routing ConfigurationTo handle custom page routing (e.g., serving home.html as the default root page and handling extensionless URLs like /about), the virtual host configuration (/etc/nginx/sites-available/my-website) must be configured as follows:Nginxserver {
     listen 80;
     listen [::]:80;
 
@@ -37,15 +36,48 @@ sudo chmod -R 755 /var/www/html
         try_files $uri $uri/ $uri.html /home.html;
     }
 }
-Note: Ensure this configuration is symlinked to /etc/nginx/sites-enabled/ and default landing configs are removed.
-🔐 GitHub Secrets ConfigurationTo allow GitHub Actions to safely authenticate with your private EC2 instance without exposing credentials,
-the following Repository Secrets must be added under Settings > Secrets and variables > Actions:Secret NameDescriptionExample ValueEC2_HOST
-The Public IPv4 address of your AWS EC2 instance43.205.x.xEC2_SSH_KEYThe contents of your private key file (.pem)-----BEGIN RSA PRIVATE KEY----- ...
-Note: The deployment username (ubuntu) is hardcoded directly into the workflow file to ensure robust parsing.
+Note: Ensure this configuration is symlinked to /etc/nginx/sites-enabled/ and default landing configs are removed.3. Workflow Configuration (deploy.yml)The core deployment automation is defined in .github/workflows/deploy.yml:YAMLname: Deploy Static Website to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the latest source code from the GitHub repository
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Step 2: Securely copy all website files to the EC2 instance using SCP
+      - name: Deploy to EC2 via SCP
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu              # EC2 login username (Ubuntu AMI)
+          key: ${{ secrets.EC2_SSH_KEY }} # Private SSH key stored in GitHub Secrets
+          source: "./*"                 # Copy all files from the repository
+          target: "/var/www/html"       # Destination directory on the EC2 server
+
+      # Step 3: Reload the Nginx service to apply the latest website changes
+      - name: Reload Nginx Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu              # EC2 login username
+          key: ${{ secrets.EC2_SSH_KEY }} # Private SSH key stored in GitHub Secrets
+          script: |
+            # Reload Nginx without interrupting active connections
+            sudo systemctl reload nginx
+🔐 GitHub Secrets ConfigurationTo allow GitHub Actions to safely authenticate with your private EC2 instance without exposing credentials, the following Repository Secrets must be added under Settings > Secrets and variables > Actions:Secret NameDescriptionExample ValueEC2_HOST
+The Public IPv4 address of your AWS EC2 instance43.205.x.xEC2_SSH_KEY
+The contents of your private key file (.pem)-----BEGIN RSA PRIVATE KEY----- ...Note: The deployment username (ubuntu) is hardcoded directly into the workflow file to ensure robust parsing.
 📂 Project StructurePlaintext├── .github/
 │   └── workflows/
 │       └── deploy.yml       # GitHub Actions Workflow configuration
-├── images/                  # Media assets (logos, background images)
 ├── home.html                # Main entrance/landing page
 └── README.md                # Project documentation
 ⚙️ How to Deploy Changes Local-to-RemoteWhenever you add new features or modify pages locally, use the standard Git workflow to push to GitHub, which automatically kicks off the deployment:Bash# 1. Stage all modifications
