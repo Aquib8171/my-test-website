@@ -37,7 +37,10 @@ sudo chmod -R 755 /var/www/html
     }
 }
 Note: Ensure this configuration is symlinked to /etc/nginx/sites-enabled/ and default landing configs are removed.
-🔐 GitHub Secrets ConfigurationTo allow GitHub Actions to safely authenticate with your private EC2 instance without exposing credentials, the following Repository Secrets must be added under Settings > Secrets and variables > Actions:Secret NameDescriptionExample ValueEC2_HOSTThe Public IPv4 address of your AWS EC2 instance43.205.x.xEC2_SSH_KEYThe contents of your private key file (.pem)-----BEGIN RSA PRIVATE KEY----- ...Note: The deployment username (ubuntu) is hardcoded directly into the workflow file to ensure robust parsing.
+🔐 GitHub Secrets ConfigurationTo allow GitHub Actions to safely authenticate with your private EC2 instance without exposing credentials,
+the following Repository Secrets must be added under Settings > Secrets and variables > Actions:Secret NameDescriptionExample ValueEC2_HOST
+The Public IPv4 address of your AWS EC2 instance43.205.x.xEC2_SSH_KEYThe contents of your private key file (.pem)-----BEGIN RSA PRIVATE KEY----- ...
+Note: The deployment username (ubuntu) is hardcoded directly into the workflow file to ensure robust parsing.
 📂 Project StructurePlaintext├── .github/
 │   └── workflows/
 │       └── deploy.yml       # GitHub Actions Workflow configuration
