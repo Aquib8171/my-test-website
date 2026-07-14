@@ -10,26 +10,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. GitHub Repository se code fetch karna
+      # Step 1: Check out the latest source code from the GitHub repository
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 2. Files ko Ubuntu server par securely copy karna (Direct Variable Sync)
+      # Step 2: Securely copy all website files to the EC2 instance using SCP
       - name: Deploy to EC2 via SCP
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
-          username: ubuntu             # Yahan direct 'ubuntu' likh dein taaki khali jaane ka sawal hi na rahe
-          key: ${{ secrets.EC2_SSH_KEY }}
-          source: "./*"
-          target: "/var/www/html"
+          username: ubuntu              # EC2 login username (Ubuntu AMI)
+          key: ${{ secrets.EC2_SSH_KEY }} # Private SSH key stored in GitHub Secrets
+          source: "./*"                 # Copy all files from the repository
+          target: "/var/www/html"       # Destination directory on the EC2 server
 
-      # 3. Nginx Server ko automatically reload karna
+      # Step 3: Reload the Nginx service to apply the latest website changes
       - name: Reload Nginx Server
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
-          username: ubuntu             # Yahan bhi direct 'ubuntu' likh dein
-          key: ${{ secrets.EC2_SSH_KEY }}
+          username: ubuntu              # EC2 login username
+          key: ${{ secrets.EC2_SSH_KEY }} # Private SSH key stored in GitHub Secrets
           script: |
+            # Reload Nginx without interrupting active connections
             sudo systemctl reload nginx
