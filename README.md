@@ -36,16 +36,13 @@ sudo chmod -R 755 /var/www/html
         try_files $uri $uri/ $uri.html /home.html;
     }
 }
-Note: Ensure this configuration is symlinked to /etc/nginx/sites-enabled/ and default landing configs are removed.🔐 GitHub Secrets ConfigurationTo allow GitHub Actions to safely authenticate with your private EC2 instance without exposing credentials, the following Repository Secrets must be added under Settings > Secrets and variables > Actions:Secret NameDescriptionExample ValueEC2_HOSTThe Public IPv4 address of your AWS EC2 instance43.205.x.xEC2_SSH_KEYThe contents of your private key file (.pem)-----BEGIN RSA PRIVATE KEY----- ...Note: The deployment username (ubuntu) is hardcoded directly into the workflow file to ensure robust parsing.📂 Project StructurePlaintext├── .github/
+Note: Ensure this configuration is symlinked to /etc/nginx/sites-enabled/ and default landing configs are removed.
+🔐 GitHub Secrets ConfigurationTo allow GitHub Actions to safely authenticate with your private EC2 instance without exposing credentials, the following Repository Secrets must be added under Settings > Secrets and variables > Actions:Secret NameDescriptionExample ValueEC2_HOSTThe Public IPv4 address of your AWS EC2 instance43.205.x.xEC2_SSH_KEYThe contents of your private key file (.pem)-----BEGIN RSA PRIVATE KEY----- ...Note: The deployment username (ubuntu) is hardcoded directly into the workflow file to ensure robust parsing.
+📂 Project StructurePlaintext├── .github/
 │   └── workflows/
 │       └── deploy.yml       # GitHub Actions Workflow configuration
 ├── images/                  # Media assets (logos, background images)
-├── about.html               # About page
-├── careers.html             # Careers page
-├── contact.html             # Contact page
 ├── home.html                # Main entrance/landing page
-├── services.html            # Services showcase page
-├── style.css                # Global website styling
 └── README.md                # Project documentation
 ⚙️ How to Deploy Changes Local-to-RemoteWhenever you add new features or modify pages locally, use the standard Git workflow to push to GitHub, which automatically kicks off the deployment:Bash# 1. Stage all modifications
 git add .
