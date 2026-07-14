@@ -23,7 +23,8 @@ Nginx needs appropriate read permissions to serve the files, and the deployer us
 ```bash
 sudo chown -R ubuntu:www-data /var/www/html
 sudo chmod -R 755 /var/www/html
-2. Nginx Routing ConfigurationTo handle custom page routing (e.g., serving home.html as the default root page and handling extensionless URLs like /about), the virtual host configuration (/etc/nginx/sites-available/my-website) must be configured as follows:Nginxserver {
+2. Nginx Routing ConfigurationTo handle custom page routing (e.g., serving home.html as the default root page and handling extensionless URLs like /about), the virtual host configuration (/etc/nginx/sites-available/my-website) must be configured as follows:Nginxserver
+{
     listen 80;
     listen [::]:80;
 
